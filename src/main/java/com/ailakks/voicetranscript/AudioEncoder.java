@@ -20,7 +20,6 @@ public class AudioEncoder {
     public static byte[] encode(byte[] pcm) {
         LameEncoder encoder = new LameEncoder(new javax.sound.sampled.AudioFormat(44100.0f, 16, 2, true, false), 256, MPEGMode.STEREO, Lame.QUALITY_HIGHEST, false);
 
-
         ByteArrayOutputStream mp3 = new ByteArrayOutputStream();
         byte[] buffer = new byte[encoder.getPCMBufferSize()];
 
