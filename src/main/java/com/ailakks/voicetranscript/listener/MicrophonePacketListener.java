@@ -10,6 +10,7 @@
 
 package com.ailakks.voicetranscript.listener;
 
+import com.ailakks.voicetranscript.VoiceTranscript;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -59,7 +60,7 @@ public class MicrophonePacketListener {
                     .build();
 
             Entity<FormDataMultiPart> requestEntity = Entity.entity(formData, MediaType.MULTIPART_FORM_DATA_TYPE);
-            requestEntity.getEntity().getHeaders().add("Authorization", "Bearer ");
+            requestEntity.getEntity().getHeaders().add("Authorization", "Bearer " + VoiceTranscript.bukkitConfiguration.getString("key.open_ai"));
 
             Response response = client.target(apiEndpoint)
                     .request(MediaType.APPLICATION_JSON_TYPE)
