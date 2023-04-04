@@ -1,0 +1,4 @@
+name: Voice Transcript
+version: '${version}'
+main: com.ailakks.voicetranscript.VoiceTranscript
+api-version: 1.19
