@@ -36,6 +36,8 @@ public class MicrophonePacketListener {
     private static byte[] totalDecode;
 
     public static void onMicrophonePacket(MicrophonePacketEvent event) {
+        System.out.println(1);
+
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             byteArrayOutputStream.write(event.getPacket().getOpusEncodedData());
