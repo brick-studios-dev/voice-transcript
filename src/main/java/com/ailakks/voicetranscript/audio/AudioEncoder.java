@@ -8,7 +8,7 @@
  * @created : 04/04/2023
  */
 
-package com.ailakks.voicetranscript;
+package com.ailakks.voicetranscript.audio;
 
 import net.sourceforge.lame.lowlevel.LameEncoder;
 import net.sourceforge.lame.mp3.Lame;

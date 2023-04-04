@@ -11,7 +11,6 @@
 package com.ailakks.voicetranscript.listener;
 
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
-import de.maxhenkel.voicechat.api.opus.OpusDecoder;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -35,43 +34,46 @@ import java.util.logging.Logger;
 public class MicrophonePacketListener {
     private static byte[] totalDecode;
 
-    public static void onMicrophonePacket(MicrophonePacketEvent event) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byteArrayOutputStream.write(event.getPacket().getOpusEncodedData());
-        totalDecode = byteArrayOutputStream.toByteArray();
+    public static void onMicrophonePacket(MicrophonePacketEvent event) {
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            byteArrayOutputStream.write(event.getPacket().getOpusEncodedData());
+            totalDecode = byteArrayOutputStream.toByteArray();
 
-        String apiEndpoint = "https://api.openai.com/v1/audio/transcriptions";
-        URL url = new URL(apiEndpoint);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setDoOutput(true);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "audio/mp3");
+            String apiEndpoint = "https://api.openai.com/v1/audio/transcriptions";
+            URL url = new URL(apiEndpoint);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "audio/mp3");
 
-        FormDataMultiPart formData = new FormDataMultiPart();
-        FormDataBodyPart filePart = new FormDataBodyPart(
-                FormDataContentDisposition.name("file").fileName("audio.mp3").build(),
-                new ByteArrayInputStream(totalDecode), MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        formData.field("model", "whisper-1");
-        formData.bodyPart(filePart);
+            FormDataMultiPart formData = new FormDataMultiPart();
+            FormDataBodyPart filePart = new FormDataBodyPart(
+                    FormDataContentDisposition.name("file").fileName("audio.mp3").build(),
+                    new ByteArrayInputStream(totalDecode), MediaType.APPLICATION_OCTET_STREAM_TYPE);
+            formData.field("model", "whisper-1");
+            formData.bodyPart(filePart);
 
-        Client client = ClientBuilder.newBuilder()
-                .register(MultiPartFeature.class)
-                .build();
+            Client client = ClientBuilder.newBuilder()
+                    .register(MultiPartFeature.class)
+                    .build();
 
-        Entity<FormDataMultiPart> requestEntity = Entity.entity(formData, MediaType.MULTIPART_FORM_DATA_TYPE);
-        requestEntity.getEntity().getHeaders().add("Authorization", "Bearer ");
+            Entity<FormDataMultiPart> requestEntity = Entity.entity(formData, MediaType.MULTIPART_FORM_DATA_TYPE);
+            requestEntity.getEntity().getHeaders().add("Authorization", "Bearer ");
 
-        Response response = client.target(apiEndpoint)
-                .request(MediaType.APPLICATION_JSON_TYPE)
-                .post(requestEntity);
+            Response response = client.target(apiEndpoint)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .post(requestEntity);
 
-        InputStream inputStream = response.readEntity(InputStream.class);
-        String stringResponse = new Scanner(inputStream, "UTF-8").useDelimiter("\\Z").next();
+            InputStream inputStream = response.readEntity(InputStream.class);
+            String stringResponse = new Scanner(inputStream, "UTF-8").useDelimiter("\\Z").next();
 
-        Logger.getGlobal().log(Level.INFO, stringResponse);
+            Logger.getGlobal().log(Level.INFO, stringResponse);
 
-        inputStream.close();
-        client.close();
-
+            inputStream.close();
+            client.close();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 }
