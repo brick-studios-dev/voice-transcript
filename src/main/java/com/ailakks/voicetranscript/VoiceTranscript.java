@@ -1,5 +1,7 @@
 package com.ailakks.voicetranscript;
 
+import com.ailakks.voicetranscript.configuration.BukkitConfiguration;
+import com.ailakks.voicetranscript.configuration.BukkitConfigurationManager;
 import com.ailakks.voicetranscript.listener.MicrophonePacketListener;
 import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
@@ -9,10 +11,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class VoiceTranscript extends JavaPlugin implements VoicechatPlugin {
 
+    public static VoiceTranscript instance;
+
+    public static final BukkitConfigurationManager bukkitConfigurationManager = new BukkitConfigurationManager();
+    public static final BukkitConfiguration bukkitConfiguration = bukkitConfigurationManager.getConfig("config.yml");
+
     @Override
     public void onEnable() {
-        // Plugin startup logic
-
+        instance = this;
     }
 
     @Override
